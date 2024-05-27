@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Base tables • Prof. Hlas</title>
+<style>
+    body { font-family:Helvetica, sans-serif; margin-left: auto; margin-right: auto; max-width: 40em; }
+    table { border-collapse: collapse; margin-left: auto; margin-right: auto; }
+    td { border: 1px solid gray; height: 2em; line-height: 2em; text-align: center; vertical-align: middle; width: 2em; cursor: pointer; }
+    ul { margin-top: -1em; }
+    .spacing li { padding-bottom: 0.75em; }
+
+    .center { text-align: center; }
+    .highlight { background-color: lightgreen; }
+
+    hr.break { margin: 4em 0; page-break-after: always; }
+
+    /* animation */
+    td { transition: background .25s ease, color .25s ease; -moz-transition: background .25s ease, color .25s ease; -webkit-transition: background .25s ease, color .25s ease; }
+
+    @media print {
+        .noprint { display: none; }
+        hr.break { margin: 0; padding: 0; visibility: hidden; }
+    }
+</style>
+</head>
+<body>
+<h1>Base tables</h1>
+<p class="noprint">Click cells to toggle highlights.</p>
+<p class="noprint">Choose base system: 
+    <select onchange="APP.updateTables(this.value);">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10" selected>10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+    </select>
+</p>
+
+<h2>100<sub class="base-indicator">10</sub> chart</h2>
+
+<table id="chart-100">
+</table>
+<p class="noprint center">
+    <button onclick="APP.clearAll('chart-100')" class="noprint">Reset highlights</button>
+</p>
+
+
+<hr class="break">
+
+
+<h2>Base <span class="base-indicator">10</span> addition table</h2>
+
+<table id="chart-add">
+</table>
+<p class="noprint center">
+    <button onclick="APP.clearAll('chart-add')" class="noprint">Reset highlights</button>
+</p>
+
+
+<hr class="break">
+
+
+<h2>Base <span class="base-indicator">10</span> multiplication table</h2>
+
+<table id="chart-mult">
+</table>
+<p class="noprint center">
+    <button onclick="APP.clearAll('chart-mult')" class="noprint">Reset highlights</button>
+</p>
+
+<div class="noprint">
+    <hr>
+
+    <p>More resources</p>
+    <ul>
+        <li><a href="https://en.m.wikipedia.org/wiki/Table_of_bases" target="_blank">Wikipedia table of bases</a></li>
+        <li><a href="/index.html">Prof. Hlas math activities</a></li>
+    </ul>
+</div>
+
+
+<noscript>[ [ Please enable Javascript for the highlighting features to work. ] ]</noscript>
+<script>
+var APP = APP || {};
+
+APP.clearAll = function (id) {
+    "use strict";
+    var cells = document.getElementById(id).querySelectorAll("td");
+    var i;
+
+    for (i = cells.length - 1; i >= 0; i -= 1) {
+        cells[i].className = "";
+    }
+};
+
+APP.baseIndicator = function (base) {
+    "use strict";
+    var span = document.body.querySelectorAll(".base-indicator");
+    var i = 0;
+
+    for (i = 0; i < span.length; i += 1) {
+        span[i].innerHTML = base;
+    }
+};
+
+// toggle cell highlights
+APP.changeCell = function (e) {
+    "use strict";
+    var source;
+
+    e = e || Event;
+    source = e.target;
+
+    switch (source.className) {
+        case "":
+            source.className = "highlight";
+            break;
+        case "highlight":
+            source.className = "";
+            break;
+    }
+};
+
+// add listeners to table cells
+APP.highlighter = function (id) {
+    "use strict";
+    var cells = document.getElementById(id).querySelectorAll("td");
+    var len = cells.length;
+    var type = window.hasOwnProperty("ontouchstart") ? "touchend" : "click";
+    var i = 0;
+
+    for (i = 0; i < len; i += 1) {
+        if (document.addEventListener) {
+            cells[i].addEventListener(type, APP.changeCell, false);
+        } else if (document.attachEvent) { // IE
+            cells[i].attachEvent("on" + type, APP.changeCell);
+        } else {
+            cells[i]["on" + type] = APP.changeCell;
+        }
+    }
+};
+
+APP.make100Table = function (base) {
+    "use strict";
+    var num = 1;
+    var tmpHTML = "";
+    var r = 0; // row index
+    var c = 0; // column index
+
+    for (r = 0; r < base; r += 1) {
+        tmpHTML += "<tr>";
+
+        for (c = 0; c < base; c += 1) {
+            tmpHTML += "<td>" + num.toString(base) + "<\/td>";
+            num += 1;
+        }
+
+        tmpHTML += "<\/tr>";
+    }
+
+    document.getElementById("chart-100").innerHTML = tmpHTML;
+    APP.highlighter("chart-100");
+};
+
+APP.makeAddTable = function (base) {
+    "use strict";
+    var num = 0;
+    var tmpHTML = "";
+    var r = 0; // row index
+    var c = 0; // column index
+
+    // first row
+    tmpHTML += "<tr>";
+    tmpHTML += "<th>+<\/th>";
+    for (c = 1; c <= base; c += 1) {
+        tmpHTML += "<th>" + c.toString(base) + "<\/th>";
+    }
+    tmpHTML += "<\/tr>";
+
+    // remaining rows
+    for (r = 1; r <= base; r += 1) {
+        tmpHTML += "<tr>";
+        tmpHTML += "<th>" + r.toString(base) + "<\/th>";
+        for (c = 1; c <= base; c += 1) {
+            num = r + c;
+            tmpHTML += "<td>" + num.toString(base) + "<\/td>";
+        }
+
+        tmpHTML += "<\/tr>";
+    }
+
+    document.getElementById("chart-add").innerHTML = tmpHTML;
+    APP.highlighter("chart-add");
+};
+
+APP.makeMultTable = function (base) {
+    "use strict";
+    var num = 0;
+    var tmpHTML = "";
+    var r = 0; // row index
+    var c = 0; // column index
+
+    // first row
+    tmpHTML += "<tr>";
+    tmpHTML += "<th>&times;<\/th>";
+    for (c = 1; c <= base; c += 1) {
+        tmpHTML += "<th>" + c.toString(base) + "<\/th>";
+    }
+    tmpHTML += "<\/tr>";
+
+    // remaining rows
+    for (r = 1; r <= base; r += 1) {
+        tmpHTML += "<tr>";
+        tmpHTML += "<th>" + r.toString(base) + "<\/th>";
+        for (c = 1; c <= base; c += 1) {
+            num = r * c;
+            tmpHTML += "<td>" + num.toString(base) + "<\/td>";
+        }
+
+        tmpHTML += "<\/tr>";
+    }
+
+    document.getElementById("chart-mult").innerHTML = tmpHTML;
+    APP.highlighter("chart-mult");
+};
+
+APP.updateTables = function (base) {
+    "use strict";
+    
+    APP.baseIndicator(base);
+    APP.make100Table(base);
+    APP.makeAddTable(base);
+    APP.makeMultTable(base);
+};
+
+
+APP.updateTables(10);
+
+</script>
+</body>
+</html>
