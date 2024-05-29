@@ -25,8 +25,7 @@
 </head>
 <body>
 <h1>Base tables</h1>
-<p class="noprint">Click cells to toggle highlights.</p>
-<p class="noprint">Choose base system: 
+<p class="noprint">Click cells to toggle highlights. Choose base system: 
     <select onchange="APP.updateTables(this.value);">
         <option value="2">2</option>
         <option value="3">3</option>
@@ -236,6 +235,7 @@ APP.makeMultTable = function (base) {
 
 APP.updateTables = function (base) {
     "use strict";
+
     
     APP.baseIndicator(base);
     APP.make100Table(base);
